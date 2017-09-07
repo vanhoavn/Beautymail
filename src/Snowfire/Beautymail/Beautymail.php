@@ -2,6 +2,7 @@
 
 namespace Snowfire\Beautymail;
 
+use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
 
 class Beautymail implements Mailer
@@ -19,6 +20,27 @@ class Beautymail implements Mailer
      * @var \Illuminate\Contracts\Mail\Mailer
      */
     private $mailer;
+
+    /**
+     * The "to" recipients of the message.
+     *
+     * @var array
+     */
+    protected $to = [];
+
+    /**
+     * The "cc" recipients of the message.
+     *
+     * @var array
+     */
+    protected $cc = [];
+
+    /**
+     * The "bcc" recipients of the message.
+     *
+     * @var array
+     */
+    protected $bcc = [];
 
     /**
      * Initialise the settings and mailer.
@@ -55,7 +77,7 @@ class Beautymail implements Mailer
     {
         $data = array_merge($this->settings, $data);
 
-        $this->mailer->send($view, $data, $callback);
+        $this->mailer->send($this->fill($view), $data, $callback);
     }
 
     /**
@@ -71,11 +93,11 @@ class Beautymail implements Mailer
     {
         $data = array_merge($this->settings, $data);
 
-        $this->mailer->queue($view, $data, $callback);
+        $this->mailer->queue($this->fill($view), $data, $callback);
     }
 
     /**
-     * @param $view
+     * @param       $view
      * @param array $data
      *
      * @return \Illuminate\View\View
@@ -84,7 +106,7 @@ class Beautymail implements Mailer
     {
         $data = array_merge($this->settings, $data);
 
-        return view($view, $data);
+        return view($this->fill($view), $data);
     }
 
     /**
@@ -120,5 +142,63 @@ class Beautymail implements Mailer
             \Request::getSchemeAndHttpHost(),
             $this->settings['logo']['path']
         );
+    }
+
+    /**
+     * Begin the process of mailing a mailable class instance.
+     *
+     * @param  mixed $users
+     *
+     * @return $this
+     */
+    public function to($users)
+    {
+        $this->to = $users;
+
+        return $this;
+    }
+
+    /**
+     * Set the recipients of the message.
+     *
+     * @param  mixed $users
+     *
+     * @return $this
+     */
+    public function cc($users)
+    {
+        $this->cc = $users;
+
+        return $this;
+    }
+
+    /**
+     * Begin the process of mailing a mailable class instance.
+     *
+     * @param  mixed $users
+     *
+     * @return $this
+     */
+    public function bcc($users)
+    {
+        $this->bcc = $users;
+    }
+
+    /**
+     * Populate the mailable with the addresses.
+     *
+     * @param  \Illuminate\Mail\Mailable|array $mailable
+     *
+     * @return \Illuminate\Mail\Mailable|array
+     */
+    protected function fill($mailable)
+    {
+        if ($mailable instanceof Mailable) {
+            return $mailable->to($this->to)
+                ->cc($this->cc)
+                ->bcc($this->bcc);
+        } else {
+            return $mailable;
+        }
     }
 }
