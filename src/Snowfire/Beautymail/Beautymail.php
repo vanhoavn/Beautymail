@@ -4,6 +4,7 @@ namespace Snowfire\Beautymail;
 
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Mail\PendingMail;
 
 class Beautymail implements Mailer
 {
@@ -54,6 +55,21 @@ class Beautymail implements Mailer
         $this->setLogoPath();
     }
 
+    public function to($users)
+    {
+        return (new PendingMail($this))->to($users);
+    }
+
+    public function bcc($users)
+    {
+        return (new PendingMail($this))->bcc($users);
+    }
+    
+    public function cc($users)
+    {
+        return (new PendingMail($this))->cc($users);
+    }
+
     /**
      * Retrieve the settings.
      *
@@ -62,6 +78,14 @@ class Beautymail implements Mailer
     public function getData()
     {
         return $this->settings;
+    }
+    
+    /**
+     * @return \Illuminate\Contracts\Mail\Mailer
+     */
+    public function getMailer()
+    {
+        return $this->mailer;
     }
 
     /**

@@ -1,4 +1,4 @@
-# Beautymail for Laravel 5
+# Beautymail for Laravel
 
 Beautymail makes it super easy to send beautiful responsive HTML emails. It's made for things like:
 
@@ -8,6 +8,14 @@ Beautymail makes it super easy to send beautiful responsive HTML emails. It's ma
 * Data exports
 
 If you're on Laravel 4, use the `1.x` branch.
+
+### Index:
+
+- [Templates](#templates)
+- [Installation](#installation)
+- [Send your first Beauty mail](#send-your-first-beauty-mail)
+- [Options](#options)
+- [Lumen support](#lumen-support)
 
 ## Templates
 
@@ -29,7 +37,7 @@ __Sunny__
 
 Add the package to your `composer.json` by running:
 
-    composer require snowfire/beautymail dev-master
+    composer require snowfire/beautymail
 
 When it's installed, add it to the providers list in `config/app.php`
 
@@ -209,3 +217,41 @@ To change colours for the different segments, pass a colour variable:
 
 @stop
 ```
+
+## Lumen support
+
+In order to get this working on Lumen follow the installation instructions except for the `artisan vendor:publish` command, since Lumen does not provide this command. Instead you have to copy the assets folder from `vendor/snowfire/beautymail/public/` to the public folder in your Lumen project manually.
+
+Make sure to also put the `beautymail.php` config file in the `config` folder (default available in `src/config/settings.php`)
+
+### Enable mailing in Lumen
+
+After this you will need to install and configure `illuminate/mailer` with: 
+
+    composer require illuminate/mail
+   
+and add this to your `bootstrap/app.php`:
+
+    $app->withFacades();
+    $app->register(App\Providers\AppServiceProvider::class);
+
+See [this blog post](https://medium.com/@edwardsteven/using-lumen-and-laravel-mail-with-mailgun-270415daed37) for more details and how to use different mail libraries in lumen:
+
+### Configure Beautymail classes and configuration parameters
+
+In order to get Beautymail working on Lumen you need to add the following to your `bootstrap/app.php` in order to resolve missing config files, parameters and classes (before you register `BeautymailServiceProvider`):
+
+    // Provide required path variables
+    $app->instance('path.config', env("STORAGE_DIR", app()->basePath()) . DIRECTORY_SEPARATOR . 'config');
+    $app->instance('path.public', env("STORAGE_DIR", app()->basePath()) . DIRECTORY_SEPARATOR . 'public');
+
+    // Enable config for beautymail
+    $app->configure('beautymail');
+    
+    // Provide class alliases to resolve Request and Config
+    class_alias(\Illuminate\Support\Facades\Request::class, "\Request");
+    class_alias(\Illuminate\Support\Facades\Config::class, "\Config");
+
+### Start using Beautymail
+
+Congratulations, you can know start using bBautmail in Lumen. See: [Send your first Beauty mail](#send-your-first-beauty-mail) on what to do next.
