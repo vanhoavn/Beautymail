@@ -157,6 +157,18 @@ class Beautymail implements Mailer
     }
 
     /**
+     * @return mixed
+     */
+    private function setLogoPath()
+    {
+        $this->settings['logo']['path'] = str_replace(
+            '%PUBLIC%',
+            \Request::getSchemeAndHttpHost(),
+            $this->settings['logo']['path']
+        );
+    }
+
+    /**
      * Populate the mailable with the addresses.
      *
      * @param  \Illuminate\Mail\Mailable|array $mailable
