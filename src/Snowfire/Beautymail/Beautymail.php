@@ -157,58 +157,6 @@ class Beautymail implements Mailer
     }
 
     /**
-     * @return mixed
-     */
-    private function setLogoPath()
-    {
-        $this->settings['logo']['path'] = str_replace(
-            '%PUBLIC%',
-            \Request::getSchemeAndHttpHost(),
-            $this->settings['logo']['path']
-        );
-    }
-
-    /**
-     * Begin the process of mailing a mailable class instance.
-     *
-     * @param  mixed $users
-     *
-     * @return $this
-     */
-    public function to($users)
-    {
-        $this->to = $users;
-
-        return $this;
-    }
-
-    /**
-     * Set the recipients of the message.
-     *
-     * @param  mixed $users
-     *
-     * @return $this
-     */
-    public function cc($users)
-    {
-        $this->cc = $users;
-
-        return $this;
-    }
-
-    /**
-     * Begin the process of mailing a mailable class instance.
-     *
-     * @param  mixed $users
-     *
-     * @return $this
-     */
-    public function bcc($users)
-    {
-        $this->bcc = $users;
-    }
-
-    /**
      * Populate the mailable with the addresses.
      *
      * @param  \Illuminate\Mail\Mailable|array $mailable
