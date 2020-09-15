@@ -5,10 +5,16 @@ namespace Snowfire\Beautymail;
 class CssInlinerPlugin implements \Swift_Events_SendListener
 {
     /**
+     * @var \Pelago\Emogrifier
+     */
+    protected $inliner;
+
+    /**
      * Initialize the CSS inliner.
      */
     public function __construct()
     {
+        $this->inliner = new \Pelago\Emogrifier();
     }
 
     /**
@@ -27,12 +33,14 @@ class CssInlinerPlugin implements \Swift_Events_SendListener
         ];
 
         if ($message->getBody() && in_array($message->getContentType(), $properTypes)) {
-            $message->setBody(\Pelago\Emogrifier\CssInliner::fromHtml($message->getBody()));
+            $this->inliner->setHtml($message->getBody());
+            $message->setBody($this->inliner->emogrify());
         }
 
         foreach ($message->getChildren() as $part) {
             if (strpos($part->getContentType(), 'text/html') === 0) {
-                $message->setBody(\Pelago\Emogrifier\CssInliner::fromHtml($part->getBody()));
+                $this->inliner->setHtml($part->getBody());
+                $message->setBody($this->inliner->emogrify());
             }
         }
     }
@@ -47,4 +55,3 @@ class CssInlinerPlugin implements \Swift_Events_SendListener
         // Do Nothing
     }
 }
-
